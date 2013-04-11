@@ -16,8 +16,7 @@ PVector acceleration;
 void setup() {
   size(displayWidth, displayHeight, P3D);
   sphereDetail(60);
-  
-  
+
   orientation(PORTRAIT);
   gesture = new KetaiGesture(this);
 
@@ -78,7 +77,7 @@ void setupLights() {
   float lightY = map(mouseY, 0, height, 1, -1);
 
   lights();
-  directionalLight(200, 255, 200, lightX, lightY, -1);
+  directionalLight(200, 200, 200, lightX, lightY, -1);
 }
 
 void onFlick(float x, float y, float startx, float starty, float v) {
