@@ -99,7 +99,6 @@ void draw() {
   
   for (Ball ball : balls) {
     ball.draw();
-    ball.output();
   }
 }
 
