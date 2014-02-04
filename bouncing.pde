@@ -5,17 +5,28 @@ import android.view.MotionEvent;
 KetaiGesture gesture; 
 
 class Ball {
-  PVector position;
-  PVector velocity;
-  float diameter;
+  private PVector position;
+  private PVector velocity;
+  private float diameter;
+  private PVector acceleration;
+
+  public Ball(PVector position, PVector velocity, float diameter, PVector acceleration) {
+    this.position = position;
+    this.velocity = velocity;
+    this.diameter = diameter;
+    this.acceleration = acceleration;
+  }
+  
+  void output() {
+    println("(" + position.x + ", " + position.y + "), " + width + ", " + height);
+  }
 
   void draw() {
     float radius = diameter/2;
 
-    background(255, 204, 0);
-    ball.velocity.mult(friction);
-    ball.velocity.add(acceleration);
-    ball.position.add(velocity);
+    velocity.mult(friction);
+    velocity.add(acceleration);
+    position.add(velocity);
 
     if (position.x - radius <= 0) {
       velocity.mult(new PVector(-1, 1));
@@ -44,15 +55,21 @@ class Ball {
     setupLights();
 
     fill(color(map(velocity.mag(), 0, 50, 0, 255), 93, 75));
+    pushMatrix();
     translate(position.x, position.y, 0);
     sphere(diameter/2);
+    popMatrix();
+  }
+
+  void setAcceleration(float x, float y, float z) {
+    acceleration.set(x, y, z);
   }
 }
 
 float bounceFactor;
 float friction;
 
-Ball ball;
+ArrayList<Ball> balls = new ArrayList<Ball>();
 
 KetaiSensor sensor;
 PVector acceleration;
@@ -65,11 +82,9 @@ void setup() {
   gesture = new KetaiGesture(this);
 
   background(0);
-  ball = new Ball();
 
-  ball.position = new PVector(width/2, height/2);
-  ball.velocity = new PVector(10, 10, 1);
-  ball.diameter = width/3;
+  balls.add(new Ball(new PVector(width/3, height/3), new PVector(10, 10, 1), width/3, new PVector()));
+  balls.add(new Ball(new PVector(2*width/3, 2*height/3), new PVector(-1, -1, 1), width/4, new PVector()));
 
   bounceFactor = 0.8;
   friction = 0.999999;
@@ -77,11 +92,15 @@ void setup() {
 
   sensor = new KetaiSensor(this);
   sensor.start();
-  acceleration = new PVector();
 }
 
 void draw() {
-  ball.draw();
+  background(255, 204, 0);
+  
+  for (Ball ball : balls) {
+    ball.draw();
+    ball.output();
+  }
 }
 
 void setupLights() {
@@ -93,18 +112,20 @@ void setupLights() {
 }
 
 /*void onFlick(float x, float y, float startx, float starty, float v) {
-  if (nearCircle(startx, starty)) {
-    PVector flickVector = new PVector(x - startx, y - starty);
-    velocity.add(flickVector);
-  }
-}*/
+ if (nearCircle(startx, starty)) {
+ PVector flickVector = new PVector(x - startx, y - starty);
+ velocity.add(flickVector);
+ }
+ }*/
 /*
 boolean nearCircle(float x, float y) {
-  return sq(x - position.x) + sq(y - position.y) <= sq(diameter/2);
-}
-*/
+ return sq(x - position.x) + sq(y - position.y) <= sq(diameter/2);
+ }
+ */
 void onAccelerometerEvent(float x, float y, float z, long time, int accuracy) {
-  acceleration.set(-x/10, y/10, 0);
+  for (Ball ball : balls) {
+    ball.setAcceleration(-x/10, y/10, 0);
+  }
 }
 
 public boolean surfaceTouchEvent(MotionEvent event) {
