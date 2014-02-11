@@ -1,6 +1,7 @@
 import ketai.ui.*;
 import ketai.sensors.*;
 import android.view.MotionEvent;
+import java.util.List;
 
 KetaiGesture gesture; 
 
@@ -97,9 +98,16 @@ void setup() {
 void draw() {
   background(255, 204, 0);
   
+  for (int i = 0; i < balls.size(); i++) {
+     rebound(balls.get(i), balls.subList(i+1, balls.size()));
+  }
+  
   for (Ball ball : balls) {
     ball.draw();
   }
+}
+
+void rebound(Ball b, List<Ball> otherBalls) {
 }
 
 void setupLights() {
