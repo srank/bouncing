@@ -9,12 +9,14 @@ class Ball {
   private PVector position;
   private PVector velocity;
   private float diameter;
+  private float radius;
   private PVector acceleration;
 
   public Ball(PVector position, PVector velocity, float diameter, PVector acceleration) {
     this.position = position;
     this.velocity = velocity;
     this.diameter = diameter;
+    this.radius = diameter/2;
     this.acceleration = acceleration;
   }
   
@@ -23,8 +25,6 @@ class Ball {
   }
 
   void draw() {
-    float radius = diameter/2;
-
     velocity.mult(friction);
     velocity.add(acceleration);
     position.add(velocity);
@@ -64,6 +64,11 @@ class Ball {
 
   void setAcceleration(float x, float y, float z) {
     acceleration.set(x, y, z);
+  }
+  
+  boolean intersects(Ball other) {
+    // return distanceBetweenCentres <= this.radius + other.radius
+    return sq(this.position.x - other.position.x) + sq(this.position.y - other.position.y) < sq(this.radius + other.radius);
   }
 }
 
@@ -108,6 +113,14 @@ void draw() {
 }
 
 void rebound(Ball b, List<Ball> otherBalls) {
+  for (Ball other : otherBalls) {
+    if (b.intersects(other)) {
+     // FIXME: bounce...
+     println("boing");
+    } else {
+     println("boring");
+    } 
+  }
 }
 
 void setupLights() {
